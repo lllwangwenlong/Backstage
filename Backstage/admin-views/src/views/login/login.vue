@@ -8,10 +8,10 @@
           <el-input v-model="formData.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-          <el-input v-model="formData.password" type="password" placeholder="请输入密码"></el-input>
+          <el-input v-model="formData.password" type="password" placeholder="请输入密码" @keyup.enter.native="handleLogin"></el-input>
         </el-form-item>
       </el-form>
-      <el-button class="form-btn" type="primary" @click="handleLogin" :loading="isLoading">
+      <el-button class="form-btn" type="primary" @click="handleLogin"  :loading="isLoading">
         登录
       </el-button>
     </div>
@@ -34,14 +34,14 @@
         handleLogin () {
           this.isLoading = true
           this.$axios.post('/login',this.formData).then(res => {
-            console.log(res)
             if(res.code == 200){
+              this.$store.commit('CHANGE_USERINFO',res.data)
               this.$message.success('登录成功')
               setTimeout(() => {
                 this.$router.push('/home/index')
               })
             } else {
-              this.$message.error('登录失败')
+              this.$message.error(res.msg)
             }
             this.isLoading = false
           }).catch(err => {

@@ -48,7 +48,6 @@
           this.$axios.get('/user').then(res => {
             if(res.code == 200) {
               this.tableData = res.data
-              console.log(this.tableData)
             }
           })
         },

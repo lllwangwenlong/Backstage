@@ -1,11 +1,11 @@
 <template>
     <div class="user-manage">
       <div class="breadcrumb">
-        <el-breadcrumb separator-class="el-icon-arrow-right">
-          <el-breadcrumb-item :to="{ path: '/home/index' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-        </el-breadcrumb>
-      </div>
+      <el-breadcrumb separator-class="el-icon-arrow-right">
+        <el-breadcrumb-item :to="{ path: '/home/index' }">首页</el-breadcrumb-item>
+        <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
       <el-table
         :data="tableData"
         border
@@ -18,7 +18,7 @@
         <el-table-column
           prop="createdTime"
           label="日期"
-          width="130">
+          width="180">
         </el-table-column>
         <el-table-column
           prop="desc"
@@ -35,7 +35,7 @@
         </el-table-column>
         <el-table-column label="操作" width="200px">
           <template slot-scope="scope">
-            <el-button @click="handleDetails" size="small" type="primary">
+            <el-button @click="handleDetails(scope.row)" size="small" type="primary">
               查看详细
             </el-button>
             <el-button @click="handleDelete(scope.row._id)" size="small" type="danger">
@@ -44,9 +44,13 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-button class="btn" type="primary" @click="handleUsers">
-        添加管理员
-      </el-button>
+      <el-pagination
+        class="paging"
+        background
+        @current-change="handleCurrentChange"
+        layout="prev, pager, next"
+        :total=this.count>
+      </el-pagination>
     </div>
 </template>
 
@@ -54,39 +58,50 @@
     export default {
       data() {
         return {
-          tableData: []
+          tableData: [],
+          count: 0
         }
       },
       methods: {
-        getData() {
-          this.$axios.get('/user').then(res => {
+        getData(pn) {
+          this.$axios.get('/user',{pn}).then(res => {
             if(res.code == 200) {
+              let newArr = res.data
+              newArr.forEach(item => {
+                let date1 =  new Date(item.createdTime)
+                let date2 =  new Date(item.updatedTime)
+                let createdTime = date1.toLocaleString()
+                let updatedTime = date2.toLocaleString()
+                item.createdTime = createdTime
+                item.updatedTime = updatedTime
+            })
+              this.count = res.count
               this.tableData = res.data
             }
           })
         },
-        handleDetails() {
-          this.$router.push('/home/userDetails')
+        handleCurrentChange(val) {
+          this.getData(val)
+        },
+        handleDetails(data) {
+          this.$router.push({path:'/home/userDetail',query:{userInfo: data}})
         },
         handleDelete(id) {
-          this.$confirm('此操作将删除一位管理员, 是否继续?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
-            this.$axios.post('/user/delete',{userIds: [id] }).then(res => {
-              this.$message.success(res.msg)
-              this.getData()
-            })
-          }).catch(() => {
-            this.$message({
+                  this.$confirm('此操作将删除一位管理员, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  }).then(() => {
+                    this.$axios.post('/user/delete',{userIds: [id] }).then(res => {
+                      this.$message.success(res.msg)
+                      this.getData()
+                    })
+                  }).catch(() => {
+                    this.$message({
               type: 'info',
               message: '已取消删除'
             });
           });
-        },
-        handleUsers() {
-          this.$router.push('/home/usersadd')
         }
       },
       created() {
@@ -103,6 +118,9 @@
   }
   .btn {
     margin: 0 auto;
+  }
+  .paging {
+    text-align: center;
   }
 }
 </style>
