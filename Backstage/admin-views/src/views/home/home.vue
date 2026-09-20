@@ -40,6 +40,15 @@
               <el-menu-item index="/home/books">图书管理</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
+          <el-submenu index="3">
+            <template slot="title">
+              <i class="el-icon-location"></i>
+              <span>待办管理</span>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item index="/home/todo">待办事项</el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
           <el-menu-item index="4">
             <i class="el-icon-setting"></i>
             <span>导航四</span>
