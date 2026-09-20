@@ -13,6 +13,7 @@ const components = {
   upload: () => import('../views/upload/index'),
   userDetail: () => import('../views/userDetail/index'),
   books: () => import('../views/books/index'),
+  todo: () => import('../views/todo/index'),
 }
 
 export default new Router({
@@ -87,6 +88,13 @@ export default new Router({
             title: '图书管理'
           },
           component: components.books
+        },
+        {
+          path: 'todo',
+          meta: {
+            title: '待办事项'
+          },
+          component: components.todo
         },
       ]
     },
